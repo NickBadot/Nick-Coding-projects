@@ -1,0 +1,250 @@
+/**
+ * JJTree template file created by SF JavaCC plugin 1.5.17+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  JDK_VERSION = "1.5";
+  static = true;
+  VISITOR=true;
+  MULTI=true;
+}
+
+PARSER_BEGIN(EG2)
+package practical3;
+
+public class EG2
+{
+  public static void main(String args [])
+  {
+    System.out.println("Reading from standard input...");
+    System.out.print("Enter an expression:");
+    new EG2(System.in);
+    try
+    {
+      ASTStart n = EG2.Start();
+      EG2Visitor vista = new L3Visitor();
+      n.jjtAccept(vista, null);
+      n.dump("");
+      System.out.println("Thank you.");
+    }
+    catch (Exception e)
+    {
+      System.out.println("Oops.");
+      System.out.println(e.getMessage());
+    }
+  }
+}
+
+PARSER_END(EG2)
+
+//tokens that can be skipped
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+}
+
+TOKEN : /* Operators & Grammar Constants*/
+{
+  < PLUS : "+" >
+| < MINUS: "-" >
+| < MULTIPLY : "*" >
+| < EQUALS : "=" >
+| < ASSIGN: ":=" >
+| < LPAR: "(" >
+| < LBRACKET : "[" >
+| < RPAR : ")" >
+| < RBRACKET: "]" >
+| < LCROC: "< " >
+| < RCROC: ">" >
+| < COMMA: "," >
+| < SEMICOLON: ";" >
+}
+
+TOKEN :  /*num*/
+{
+  < NUM : (< DIGIT >)+ >
+| < #DIGIT : [ "0"-"9" ] >
+}
+
+TOKEN: /*keywords*/
+{
+	< IF: "if" >
+| 	< THEN: "then" >
+| 	< BEGIN: "begin" >
+| 	< END: "end" >
+|   < INT: "int" >
+|   < BOOL: "bool" > 
+
+}
+
+TOKEN : /* identifier, declared later to avoid confusion with keywords*/
+{
+	< ID : (< LETTER >)+>
+|  	<#LETTER : ["a"-"z" , "A"-"Z"] >
+}
+
+//start defining grammar
+
+//S::= begin Decl Stmt end
+ASTStart Start() :
+{}
+{
+  < BEGIN > decls() stmts() < END >
+  {
+    return jjtThis;
+ }
+}
+
+
+//Decls ::=	 Decl D'
+void decls() :
+{}
+{
+  	decl() d()
+	
+}
+
+//D' ::= 		Decl D' | EPSILON
+void d():
+{}
+{	
+	(LOOKAHEAD(1) decls()	{jjtThis.jjtSetValue("1");}	)*
+}
+
+
+//Decl ::= 	int Vars ; | bool Vars ;
+void decl() :
+{}
+{
+( < INT > { jjtThis.jjtSetValue("int"); } | < BOOL > { jjtThis.jjtSetValue("bool"); })vars()  < SEMICOLON >
+}
+
+  
+//Vars ::=  	id V'
+void vars() :
+{Token t;}
+{
+	t=< ID > v()
+	{jjtThis.jjtSetValue(t.image);}
+}
+
+//V' ::=  		, id V' | EPSILON
+void v() :
+{Token t;}
+{
+	( LOOKAHEAD(1)
+	  < COMMA > t=<ID > v() {jjtThis.jjtSetValue(t.image);}
+	   )*
+}
+
+//Stmts ::= 	Stmt ST
+void stmts() :
+{}
+{
+ 	stmt() st() 
+}
+
+//ST::=	     stmt ST | ;Stmt  | EPSILON
+void st() :
+{}
+{
+  (
+      LOOKAHEAD(1)      {jjtThis.jjtSetValue(1);} ( 
+	stmt() st()
+| 	< SEMICOLON > stmt())
+)*
+}
+//Stmt ::= 	Assn | Cond
+void stmt():
+{}
+{
+	assn()| cond()
+}
+//Assn ::= 	id := Arith | id := Logical
+void assn() :
+{Token t;}
+{
+	t=< ID > < ASSIGN > ( arith() | logical() )
+	{
+	  jjtThis.jjtSetValue(t.image);
+	}
+}
+//Arith ::= 	Term AR
+void arith() :
+{}
+{
+	term() ar()
+
+}
+//AR::=		+Term AR | EPSILON
+void ar() :
+{}
+{
+   ( LOOKAHEAD(1)< PLUS >
+   {
+      jjtThis.jjtSetValue("+");
+    }
+     term() ar() )*
+}
+//Term ::= 	Factor TR
+void term() :
+{}
+{
+  {jjtThis.jjtSetValue("q");}
+  factor() tr()
+}
+//TR::=		*FactorTR | EPSILON
+void tr() :
+{}
+{
+	 ( LOOKAHEAD(1)
+	  < MULTIPLY >
+	  {
+	    jjtThis.jjtSetValue("*");
+		}
+	     factor() tr()
+	  )*
+}
+//Factor ::= 	F | - F
+void factor() :
+{}
+{
+	f() | < MINUS >	{jjtThis.jjtSetValue("-");
+		}	   f()
+}
+//F::=		id | num | (Arith)
+void f():
+{
+	Token t;
+  }
+{
+ 	t=< ID > 	{jjtThis.jjtSetValue("i"+t.image);}
+|	t=< NUM > 	{jjtThis.jjtSetValue("n"+t.image);}
+|< LPAR > arith() < RPAR >
+{jjtThis.jjtSetValue("a");}
+
+}
+//Cond ::= 	if Logical then S
+void cond() :
+{}
+{
+	< IF > logical() < THEN > Start()	{jjtThis.jjtSetValue("boolean");}
+}
+//Logical ::= 	[ Comp ]
+void logical() :
+{}
+{
+	< LBRACKET > comp() < RBRACKET >	//{jjtThis.jjtSetValue("boolean");}
+}
+
+//Comp ::= 	Arith = Arith | Arith > Arith | Arith < Arith  
+void comp() :
+{}
+{
+	arith() (< EQUALS > | < LCROC > | < RCROC >) arith()	//{jjtThis.jjtSetValue("boolean");}
+	
+}
+
