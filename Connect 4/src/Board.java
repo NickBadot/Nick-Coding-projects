@@ -2,16 +2,16 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 /**
- * This class represents the board used in a connect four game, the 5*7 board is represeted by an
+ * This class represents the board used in a connect four game, the 5*7 board is represented by an
  * int array, a place in the grid with no pieces has a value 0, one with a "red" piece has a value
  * of 1 and a "yellow" piece has a value of -1.
- * <p>
+ *
  * Pieces are dropped in one of the seven columns until one player manages to get four in a row of
  * the pieces of their colour, a veto move can be made instead of placing a piece but not straight
  * after another veto move. A veto variable is kept and takes the value of a column if the column
  * is vetoed, otherwise it takes the value -1, a vetocount variable is kept to reset the veto value
  * to -1 after two drops.
- * <p>
+ *
  * The board is 'smart' and is able to evaluate the score of a given player and store a list of all
  * valid moves at any given state and a list of moves played to date.
  *
@@ -128,7 +128,7 @@ public class Board {
 
     /*
      * Updates a list of all possible valid moves, any column can be vetoed if there has been no veto
-     * in thhe last two turns, any column can be dropped into if it is not vetoed and not full. There is
+     * in the last two turns, any column can be dropped into if it is not vetoed and not full. There is
      * a maximum of 14 possible moves.
      */
     public void updateValidMoves() {
@@ -174,7 +174,7 @@ public class Board {
             for (int j = 0; j < 7; j++) {
                 if (grid[i][j] == player) {
                     if (i > 2) { //check for vertical runs
-                        if (!vertical.contains(i * 10 + j)) {
+                        if (!vertical.contains(i * 10 + j)) {  // multiply by 10 to encode position
                             vertical.add(i * 10 + j);
                             run = 1;
                             for (int k = 1; k < 4; k++) {

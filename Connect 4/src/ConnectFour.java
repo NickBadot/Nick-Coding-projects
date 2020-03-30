@@ -31,7 +31,11 @@ public class ConnectFour {
 
     //setup the game
     public void setupGame() {
-        System.out.println("Human: You are about to play a of Connect 4 game against Joe the AI.");
+        System.out.println("Human: You are about to play a of Connect 4 game against Joe the AI." +
+                "\nThis is slightly different from a standard game of Connect 4. You can either DROP a piece into a " +
+                "column, or VETO a column to prevent the other player from dropping a piece there next turn.\n" +
+                "You cannot play a veto after your opponent has played a veto.\n" +
+                "To make a move type D (drop) or V (veto) followed by the column number ");
         System.out.println("Select your colour red or yellow (r/y)");
         String s = scanalot.next();
         if (s.equals("r")) {
@@ -66,7 +70,8 @@ public class ConnectFour {
                 readInput(player);
             }
             if (!(c == 'v') && !(c == 'V') && !(c == 'd') && !(c == 'D')) {
-                System.out.println("Commands must begin with v or d, please try again");
+                System.out.println("Commands must begin with v (veto) or d (drop) followed by a column number," +
+                        " please try again");
                 readInput(player);
             }
             if (!board.makemove(s, player)) {

@@ -1,6 +1,6 @@
 /*
  * CPUPlayer class represents the AI player in a game of connect four, the AI player uses either
- * Alpha-Beta Search or AB search enhanced with the kiler heuristic to decide on a move to play.
+ * Alpha-Beta Search or AB search enhanced with the killer heuristic to decide on a move to play.
  */
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class CPUPlayer {
     public ABResult abSearch(int depth, double alpha, double beta, int player, boolean verbose) {
         ABResult temp, bestres = new ABResult(-1000000);
         ArrayList<String> moves = board.validMoves();
-        if (depth == 0 || moves.isEmpty()) { //if moves lsit is empty the game is over
+        if (depth == 0 || moves.isEmpty()) { //if moves list is empty the game is over
             evals++;
             if (verbose) System.out.println("Leaf evaluated, alpha = " + alpha + " ,beta = " + beta);
             return new ABResult(board.getScore(player, true));

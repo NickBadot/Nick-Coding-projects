@@ -1,5 +1,5 @@
 /*
- * Class used to store the result of an AB search with or without Killer Heurstic
+ * Class used to store the result of an AB search with or without Killer Heuristic
  */
 public class ABResult {
     private int score;
